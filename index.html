@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qwirkle</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <div class="title-bag-count">
+    <h1>Qwirkle</h1>
+    <div id="bag-count">Bag: 108</div>
+  </div>
+  <div class="scores" id="scores"></div>
+</header>
+
+<div id="turn-banner"></div>
+
+<main>
+  <div id="board-container">
+    <div id="board"></div>
+  </div>
+
+  <aside class="sidebar">
+    <div>
+      <h3 class="sidebar-title">Your Hand</h3>
+      <div id="hand"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <button class="btn btn-primary" id="btn-play" disabled>Play Tiles</button>
+      <button class="btn btn-secondary" id="btn-exchange">Exchange Tiles</button>
+      <button class="btn btn-secondary" id="btn-cancel">Cancel</button>
+    </div>
+    <div>
+      <h3 style="margin-bottom:8px;">Log</h3>
+      <div id="log"></div>
+    </div>
+  </aside>
+</main>
+
+<div class="message-overlay" id="overlay" style="display:none;">
+  <div class="message-box">
+    <h2 id="overlay-title">Qwirkle!</h2>
+    <p id="overlay-msg"></p>
+    <button class="btn btn-primary" id="overlay-btn">New Game</button>
+  </div>
+</div>
+
+<script src="index.js">
+</script>
+</body>
+</html>
