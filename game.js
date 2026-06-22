@@ -102,7 +102,7 @@ const showLobby = async () => {
  
   // No name yet — send to lobby to pick one, preserving any room code
   if (!playerName) {
-    const lobbyUrl = new URL('lobby.html', window.location.href);
+    const lobbyUrl = new URL('index.html', window.location.href);
     if (roomCode) lobbyUrl.searchParams.set('room', roomCode);
     window.location.href = lobbyUrl.toString();
     return;
