@@ -98,19 +98,31 @@ const joinGame = async (numPlayers = 2, playerName = 'You') => {
 const showLobby = async () => {
   const params = new URLSearchParams(window.location.search);
   const roomCode = params.get('room');
-  const playerName = params.get('name') || 'Player';
-
+  const playerName = params.get('name');
+ 
+  // No name yet — send to lobby to pick one, preserving any room code
+  if (!playerName) {
+    const lobbyUrl = new URL('lobby.html', window.location.href);
+    if (roomCode) lobbyUrl.searchParams.set('room', roomCode);
+    window.location.href = lobbyUrl.toString();
+    return;
+  }
+ 
   if (roomCode) {
-    // Second (or later) player: join existing room from the URL
+    // Joining an existing room
     socket.emit('join', { roomId: roomCode.toUpperCase(), playerName });
   } else {
-    // First player: create a room and update the URL so it can be shared
+    // Creating a new room
     const numPlayers = Number(params.get('players') || 2);
     const roomId = await joinGame(numPlayers, playerName);
-    const url = new URL(window.location.href);
-    url.searchParams.set('room', roomId);
-    window.history.replaceState({}, '', url);
-    logMsg(`Share this link with your opponent: ${url}`);
+    // Rewrite the URL so the shareable link goes to lobby with the room code
+    const shareUrl = new URL('lobby.html', window.location.href);
+    shareUrl.searchParams.set('room', roomId);
+    logMsg(`Share this link with your opponent: ${shareUrl}`);
+    // Update current URL to include room without redirecting
+    const gameUrl = new URL(window.location.href);
+    gameUrl.searchParams.set('room', roomId);
+    window.history.replaceState({}, '', gameUrl);
   }
 };
 
