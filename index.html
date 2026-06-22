@@ -159,6 +159,35 @@
       background: rgba(233,69,96,0.08);
     }
 
+    /* ── Theme selector ── */
+    .theme-select { display: flex; flex-direction: column; gap: 0.4rem; }
+    .theme-select label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+    }
+    .theme-btns { display: flex; gap: 8px; }
+    .theme-btn {
+      flex: 1;
+      padding: 0.55rem 0.25rem;
+      border-radius: var(--radius);
+      border: 1px solid #2a2a4a;
+      background: var(--bg);
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+      white-space: nowrap;
+    }
+    .theme-btn.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(233,69,96,0.08);
+    }
+
     /* ── Error ── */
     .err {
       font-size: 0.78rem;
@@ -232,6 +261,16 @@
       </div>
     </div>
 
+    <!-- Theme selector -->
+    <div class="theme-select">
+      <label>Theme</label>
+      <div class="theme-btns">
+        <button class="theme-btn active" data-theme="classic">Classic</button>
+        <button class="theme-btn" data-theme="halloween">🎃 Halloween</button>
+        <button class="theme-btn" data-theme="christmas">🎄 Christmas</button>
+      </div>
+    </div>
+
     <p class="err" id="err"></p>
     <button class="btn" id="start-btn" disabled>Let's play</button>
   </div>
@@ -243,6 +282,28 @@
     const startBtn = document.getElementById('start-btn');
     const errEl = document.getElementById('err');
     let numPlayers = 2;
+
+    // ── Theme ─────────────────────────────────────────────────────────────
+    const VALID_THEMES = ['classic', 'halloween', 'christmas'];
+    const urlTheme = params.get('theme');
+    let selectedTheme = (urlTheme && VALID_THEMES.includes(urlTheme)) ? urlTheme : 'classic';
+
+    if (urlTheme && VALID_THEMES.includes(urlTheme)) {
+      // Theme already fixed by URL — hide the picker
+      document.querySelector('.theme-select').style.display = 'none';
+    } else {
+      // Let the user pick — no localStorage, selection lives only in JS
+      const applyTheme = (theme) => {
+        selectedTheme = theme;
+        document.querySelectorAll('.theme-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.theme === theme);
+        });
+      };
+      applyTheme(selectedTheme);
+      document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.addEventListener('click', () => applyTheme(btn.dataset.theme));
+      });
+    }
 
     // ── Setup based on whether we're creating or joining ──────────────────
     if (roomCode) {
@@ -278,9 +339,10 @@
       const name = nameInput.value.trim();
       if (!name) { errEl.textContent = 'Please enter a name.'; return; }
 
-      // Pass name (and optionally players count) to the game page via URL params
+      // Pass name, theme (and optionally players count) to the game page via URL params
       const url = new URL('game.html', window.location.href);
       url.searchParams.set('name', name);
+      url.searchParams.set('theme', selectedTheme);
       if (roomCode) url.searchParams.set('room', roomCode.toUpperCase());
       else url.searchParams.set('players', numPlayers);
 
