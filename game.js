@@ -145,14 +145,14 @@ const renderShapeSVG = (shape, c) => {
  
     // ── Classic ──────────────────────────────────────────────────────────────
     case 'circle':
-      return `<svg ${base}><circle cx="20" cy="20" r="17" fill="${c}" ${outlineStroke(c)}/></svg>`;
+      return `<svg ${base}><circle cx="20" cy="20" r="17" fill="${c}" /></svg>`;
     case 'square':
-      return `<svg ${base}><rect x="4" y="4" width="32" height="32" fill="${c}" ${outlineStroke(c)}/></svg>`;
+      return `<svg ${base}><rect x="4" y="4" width="32" height="32" fill="${c}"/></svg>`;
     case 'diamond':
-      return `<svg ${base}><polygon points="20,2 38,20 20,38 2,20" fill="${c}" ${outlineStroke(c)}/></svg>`;
+      return `<svg ${base}><polygon points="20,2 38,20 20,38 2,20" fill="${c}" /></svg>`;
     case '4star': {
       const p = 'M20,2 L23,17 L38,20 L23,23 L20,38 L17,23 L2,20 L17,17 Z';
-      return `<svg ${base}><path d="${p}" fill="${c}" ${outlineStroke(c)}/></svg>`;
+      return `<svg ${base}><path d="${p}" fill="${c}" /></svg>`;
     }
     case '8star': {
       const pts = [];
@@ -161,15 +161,15 @@ const renderShapeSVG = (shape, c) => {
         const r = i % 2 === 0 ? 18 : 9;
         pts.push(`${20 + r * Math.cos(angle)},${20 + r * Math.sin(angle)}`);
       }
-      return `<svg ${base}><polygon points="${pts.join(' ')}" fill="${c}" ${outlineStroke(c)}/></svg>`;
+      return `<svg ${base}><polygon points="${pts.join(' ')}" fill="${c}" /></svg>`;
     }
     case 'clover':
       return `<svg ${base}>
-        <circle cx="20" cy="12" r="8" fill="${c}" ${outlineStroke(c)}/>
-        <circle cx="20" cy="28" r="8" fill="${c}" ${outlineStroke(c)}/>
-        <circle cx="12" cy="20" r="8" fill="${c}" ${outlineStroke(c)}/>
-        <circle cx="28" cy="20" r="8" fill="${c}" ${outlineStroke(c)}/>
-        <circle cx="20" cy="20" r="6" fill="${c}" ${outlineStroke(c)}/>
+        <circle cx="20" cy="12" r="8" fill="${c}"/>
+        <circle cx="20" cy="28" r="8" fill="${c}"/>
+        <circle cx="12" cy="20" r="8" fill="${c}"/>
+        <circle cx="28" cy="20" r="8" fill="${c}"/>
+        <circle cx="20" cy="20" r="6" fill="${c}"/>
       </svg>`;
  
     // ── Halloween ─────────────────────────────────────────────────────────────
