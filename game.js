@@ -397,7 +397,9 @@ socket.on('joined', ({ roomId, playerIdx }) => {
 });
 
 socket.on('state', (serverState) => {
+  const params = new URLSearchParams(window.location.search);
   state.board = serverState.board;
+  state.yourIdx = serverState.players.findIndex(p => p.name === params.get('name'));
   state.players = serverState.players;
   state.currentPlayer = serverState.currentPlayer;
   state.bagCount = serverState.bagCount;
@@ -501,6 +503,7 @@ const renderBag = () => {
 };
 
 const updateBanner = () => {
+  console.log('state player: ', state.currentPlayer, 'yourIdx: ', state.yourIdx);
   const isMyTurn = state.currentPlayer === state.yourIdx;
   document.getElementById('turn-banner').textContent = isMyTurn
     ? 'Your turn — select a tile then click a cell'
