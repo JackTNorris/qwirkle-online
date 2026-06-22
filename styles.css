@@ -263,3 +263,7 @@
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #3a3a5a; border-radius: 3px; }
+  
+
+  .tile.exchange-selected { outline: 2px dashed #f4a261; opacity: 0.75; }
+  .exchange-indicator { position: absolute; top: 2px; right: 4px; font-size: 0.7rem; }
