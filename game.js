@@ -116,8 +116,9 @@ const showLobby = async () => {
     const numPlayers = Number(params.get('players') || 2);
     const roomId = await joinGame(numPlayers, playerName);
     // Rewrite the URL so the shareable link goes to lobby with the room code
-    const shareUrl = new URL('lobby.html', window.location.href);
+    const shareUrl = new URL('index.html', window.location.href);
     shareUrl.searchParams.set('room', roomId);
+    shareUrl.searchParams.set('numPlayers', numPlayers);
     logMsg(`Share this link with your opponent: ${shareUrl}`);
     // Update current URL to include room without redirecting
     const gameUrl = new URL(window.location.href);
