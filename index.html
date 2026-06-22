@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Qwirkle</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;800&display=swap');
+
+    :root {
+      --bg: #1a1a2e;
+      --surface: #16213e;
+      --accent: #e94560;
+      --text: #eaeaea;
+      --muted: #7a7a9a;
+      --radius: 10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      color: var(--text);
+    }
+
+    /* ── Tiles decoration ── */
+    .tiles-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1.75rem;
+    }
+    .tile {
+      width: 38px;
+      height: 38px;
+      border-radius: 7px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s, filter 0.15s;
+    }
+    .tile:hover {
+      transform: translateY(-5px);
+      filter: drop-shadow(0 0 4px rgba(255,255,255,0.5));
+    }
+    .tile svg { width: 72%; height: 72%; display: block; }
+
+    /* ── Logo ── */
+    .logo {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.3rem;
+    }
+    .subtitle {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 2rem;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border-radius: 16px;
+      border: 1px solid #2a2a4a;
+      padding: 2rem 2.25rem 1.75rem;
+      max-width: 360px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    /* ── Room badge (shown when joining via link) ── */
+    .room-badge {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg);
+      border: 1px solid #2a2a4a;
+      border-radius: var(--radius);
+      padding: 0.6rem 0.9rem;
+    }
+    .room-badge-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+    }
+    .room-badge-code {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--accent);
+    }
+
+    /* ── Field ── */
+    .field { display: flex; flex-direction: column; gap: 0.4rem; }
+    .field label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+    }
+    .field input {
+      background: var(--bg);
+      border: 1px solid #2a2a4a;
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 0.65rem 0.85rem;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .field input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(233,69,96,0.2);
+    }
+    .field input::placeholder { color: var(--muted); font-weight: 400; }
+
+    /* ── Player count (only shown when creating a room) ── */
+    .player-count { display: flex; flex-direction: column; gap: 0.4rem; }
+    .player-count label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+    }
+    .count-btns { display: flex; gap: 8px; }
+    .count-btn {
+      flex: 1;
+      padding: 0.55rem;
+      border-radius: var(--radius);
+      border: 1px solid #2a2a4a;
+      background: var(--bg);
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .count-btn.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(233,69,96,0.08);
+    }
+
+    /* ── Error ── */
+    .err {
+      font-size: 0.78rem;
+      color: var(--accent);
+      min-height: 1rem;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Button ── */
+    .btn {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: var(--radius);
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: var(--accent);
+      color: #fff;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn:hover:not(:disabled) { opacity: 0.88; }
+    .btn:active:not(:disabled) { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+
+  <div class="tiles-row" aria-hidden="true">
+    <div class="tile"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="14" fill="#e84040"/></svg></div>
+    <div class="tile"><svg viewBox="0 0 40 40"><rect x="6" y="6" width="28" height="28" fill="#f4a261"/></svg></div>
+    <div class="tile"><svg viewBox="0 0 40 40"><polygon points="20,4 36,20 20,36 4,20" fill="#f4d35e"/></svg></div>
+    <div class="tile"><svg viewBox="0 0 40 40"><path d="M20,3 L23,16 L36,20 L23,24 L20,37 L17,24 L4,20 L17,16 Z" fill="#52b788"/></svg></div>
+    <div class="tile"><svg viewBox="0 0 40 40"><circle cx="20" cy="12" r="7" fill="#4895ef"/><circle cx="20" cy="28" r="7" fill="#4895ef"/><circle cx="12" cy="20" r="7" fill="#4895ef"/><circle cx="28" cy="20" r="7" fill="#4895ef"/><circle cx="20" cy="20" r="5" fill="#4895ef"/></svg></div>
+    <div class="tile"><svg viewBox="0 0 40 40"><polygon points="20,2 23.4,11.7 32.7,7.3 28.3,16.6 38,20 28.3,23.4 32.7,32.7 23.4,28.3 20,38 16.6,28.3 7.3,32.7 11.7,23.4 2,20 11.7,16.6 7.3,7.3 16.6,11.7" fill="#b14aed"/></svg></div>
+  </div>
+
+  <div class="logo">Qwirkle</div>
+  <p class="subtitle" id="subtitle">Choose your name to play</p>
+
+  <div class="card">
+    <!-- Room badge — only visible when joining via a shared link -->
+    <div class="room-badge" id="room-badge" style="display:none;">
+      <span class="room-badge-label">Joining room</span>
+      <span class="room-badge-code" id="room-badge-code"></span>
+    </div>
+
+    <!-- Name field -->
+    <div class="field">
+      <label for="name-input">Your name</label>
+      <input
+        id="name-input"
+        type="text"
+        maxlength="20"
+        placeholder="e.g. Alice"
+        autocomplete="off"
+        spellcheck="false"
+      />
+    </div>
+
+    <!-- Player count — only visible when creating a new room -->
+    <div class="player-count" id="player-count-section">
+      <label>Number of players</label>
+      <div class="count-btns">
+        <button class="count-btn active" data-count="2">2</button>
+        <button class="count-btn" data-count="3">3</button>
+        <button class="count-btn" data-count="4">4</button>
+      </div>
+    </div>
+
+    <p class="err" id="err"></p>
+    <button class="btn" id="start-btn" disabled>Let's play</button>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const roomCode = params.get('room');
+    const nameInput = document.getElementById('name-input');
+    const startBtn = document.getElementById('start-btn');
+    const errEl = document.getElementById('err');
+    let numPlayers = 2;
+
+    // ── Setup based on whether we're creating or joining ──────────────────
+    if (roomCode) {
+      document.getElementById('subtitle').textContent = 'Choose your name to join';
+      document.getElementById('room-badge').style.display = 'flex';
+      document.getElementById('room-badge-code').textContent = roomCode.toUpperCase();
+      document.getElementById('player-count-section').style.display = 'none';
+      startBtn.textContent = "Join game";
+    }
+
+    // ── Player count buttons ───────────────────────────────────────────────
+    document.querySelectorAll('.count-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        numPlayers = Number(btn.dataset.count);
+      });
+    });
+
+    // ── Name input validation ─────────────────────────────────────────────
+    nameInput.addEventListener('input', () => {
+      const val = nameInput.value.trim();
+      startBtn.disabled = val.length === 0;
+      errEl.textContent = '';
+    });
+
+    nameInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !startBtn.disabled) handleStart();
+    });
+
+    // ── Start / Join ──────────────────────────────────────────────────────
+    const handleStart = () => {
+      const name = nameInput.value.trim();
+      if (!name) { errEl.textContent = 'Please enter a name.'; return; }
+
+      // Pass name (and optionally players count) to the game page via URL params
+      const url = new URL('game.html', window.location.href);
+      url.searchParams.set('name', name);
+      if (roomCode) url.searchParams.set('room', roomCode.toUpperCase());
+      else url.searchParams.set('players', numPlayers);
+
+      window.location.href = url.toString();
+    };
+
+    startBtn.addEventListener('click', handleStart);
+
+    // Auto-focus name field
+    nameInput.focus();
+  </script>
+</body>
+</html>
