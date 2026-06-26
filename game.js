@@ -10,6 +10,8 @@ ESSENTIAL:
 - Add in bonus points for 6+ [DONE]
 
 NICE TO HAVES:
+- Highlighting of most recent move
+- Noise when new tile added
 - Saving games
 - Score history
 - drag and drop
@@ -152,7 +154,7 @@ const renderShapeSVG = (shape, c) => {
       return `<svg ${base}><polygon points="20,2 38,20 20,38 2,20" fill="${c}" /></svg>`;
     case '4star': {
       const p = 'M20,2 L23,17 L38,20 L23,23 L20,38 L17,23 L2,20 L17,17 Z';
-      return `<svg ${base}><path d="${p}" fill="${c}" /></svg>`;
+      return `<svg ${base}><g transform="rotate(45, 20, 20)"><path d="${p}" fill="${c}" /></g></svg>`;
     }
     case '8star': {
       const pts = [];
