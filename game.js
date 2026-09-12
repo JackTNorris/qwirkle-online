@@ -8,9 +8,9 @@ ESSENTIAL:
 - Add in login [ DONE ]
 - Cancelling only part of move (add x's on pieces) [DONE]
 - Add in bonus points for 6+ [DONE]
-
 NICE TO HAVES:
 - Highlighting of most recent move
+- 
 - Noise when new tile added
 - Saving games
 - Score history
@@ -390,6 +390,7 @@ let state = {
   selectedHandIdx: null,
   exchangeMode: false,    // true when player is selecting tiles to exchange
   exchangeIdxs: new Set(), // hand indices selected for exchange
+  lastMove: [], // <-- Track on client
 };
 
 // ── Socket Events ──────────────────────────────────────────────────────────
@@ -407,6 +408,7 @@ socket.on('state', (serverState) => {
   state.bagCount = serverState.bagCount;
   state.gameOver = serverState.gameOver;
   state.yourHand = serverState.yourHand;
+  state.lastMove = serverState.lastMove || []; // <-- Update here
 
   // Clear pending once server confirms the move
   state.pendingPlacements = [];
@@ -496,6 +498,9 @@ const renderScores = () => {
     <div class="score-card ${i === state.currentPlayer ? 'active' : ''}">
       <div class="name">${p.name}</div>
       <div class="points">${p.score}</div>
+      <div class="tiles-count" style="font-size: 0.75rem; opacity: 0.8; margin-top: 3px;">
+        🀄 ${p.handCount ?? 0} tiles
+      </div>
     </div>
   `).join('');
 };
@@ -541,7 +546,6 @@ const renderBoard = () => {
   let minR = CENTER - 5, maxR = CENTER + 5;
   let minC = CENTER - 5, maxC = CENTER + 5;
 
-  // Expand visible area around all placed tiles
   const allKeys = [...Object.keys(state.board), ...state.pendingPlacements.map(p => `${p.row},${p.col}`)];
   for (const key of allKeys) {
     const [r, c] = key.split(',').map(Number);
@@ -558,6 +562,9 @@ const renderBoard = () => {
   const isMyTurn = state.currentPlayer === state.yourIdx;
   const validCells = isMyTurn && state.selectedHandIdx !== null ? getValidCells() : new Set();
 
+  // Fast coordinate lookup for tiles from the most recent move:
+  const recentMoveSet = new Set((state.lastMove || []).map(m => `${m.row},${m.col}`));
+
   let html = '';
   for (let r = minR; r <= maxR; r++) {
     for (let c = minC; c <= maxC; c++) {
@@ -565,11 +572,14 @@ const renderBoard = () => {
       const tile = state.board[key];
       const pending = state.pendingPlacements.find(p => p.row === r && p.col === c);
       const isValid = validCells.has(key);
+      const isRecent = recentMoveSet.has(key);
 
       if (tile || pending) {
         const t = tile || pending.tile;
         const preview = pending ? 'preview' : '';
-        html += `<div class="cell ${preview}" style="position:relative;">
+        const recentClass = isRecent ? 'recent-move' : '';
+
+        html += `<div class="cell ${preview} ${recentClass}" style="position:relative;">
           <div class="tile" style="cursor:default;width:60px;height:60px;">${shapeSVG(t.shape, t.color)}</div>
         </div>`;
       } else if (isValid) {
