@@ -270,3 +270,67 @@
 
   .tile.exchange-selected { outline: 2px dashed #f4a261; opacity: 0.75; }
   .exchange-indicator { position: absolute; top: 2px; right: 4px; font-size: 0.7rem; }
+  
+  .cell.recent-move {
+  outline: 2.5px solid #f4d35e;
+  outline-offset: -2px;
+  box-shadow: 0 0 10px rgba(244, 211, 94, 0.7);
+  z-index: 2;
+  animation: recentGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes recentGlow {
+  from {
+    box-shadow: 0 0 4px rgba(244, 211, 94, 0.4);
+  }
+  to {
+    box-shadow: 0 0 12px rgba(244, 211, 94, 0.9);
+  }
+}
+
+/* Layout spacing for each player's score badge */
+.score-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 12px;
+  min-width: 100px;
+}
+
+.score-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+/* Container for the mini tile icons */
+.player-hand-tiles {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 16px;
+}
+
+/* Individual mini tile representation */
+.mini-tile {
+  width: 12px;
+  height: 14px;
+  background: #f8f6f0;
+  border: 1px solid #c9c2ad;
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+
+.score-card.active .mini-tile {
+  border-color: #f4d35e;
+  box-shadow: 0 1px 3px rgba(244, 211, 94, 0.4);
+}
+
+.empty-hand {
+  font-size: 0.7rem;
+  color: #888;
+  font-style: italic;
+}

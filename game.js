@@ -494,15 +494,25 @@ const renderAll = () => {
 
 const renderScores = () => {
   const el = document.getElementById('scores');
-  el.innerHTML = state.players.map((p, i) => `
-    <div class="score-card ${i === state.currentPlayer ? 'active' : ''}">
-      <div class="name">${p.name}</div>
-      <div class="points">${p.score}</div>
-      <div class="tiles-count" style="font-size: 0.75rem; opacity: 0.8; margin-top: 3px;">
-        🀄 ${p.handCount ?? 0} tiles
+  el.innerHTML = state.players.map((p, i) => {
+    const count = p.handCount ?? 0;
+    // Generate mini tile icons based on handCount
+    const miniTiles = Array.from({ length: count }, () => 
+      `<span class="mini-tile" title="Tile"></span>`
+    ).join('');
+
+    return `
+      <div class="score-card ${i === state.currentPlayer ? 'active' : ''}">
+        <div class="score-header">
+          <div class="name">${p.name}</div>
+          <div class="points">${p.score}</div>
+        </div>
+        <div class="player-hand-tiles" title="${count} tile${count === 1 ? '' : 's'}">
+          ${miniTiles || '<span class="empty-hand">No tiles</span>'}
+        </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 };
 
 const renderBag = () => {
