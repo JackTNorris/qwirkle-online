@@ -920,19 +920,85 @@ document.getElementById('overlay-btn').onclick = () => {
 };
 
 // ── Board Pan ────────────────────────────────────────────────────────────────
+// ── Board Pan (Mouse + Touch Drag) ──────────────────────────────────────────
 (function () {
   const bc = document.getElementById('board-container');
-  let dragging = false, sx, sy, sl, st;
-  bc.addEventListener('mousedown', e => {
-    if (e.target.classList.contains('cell') || e.target.classList.contains('tile')) return;
-    dragging = true; sx = e.clientX; sy = e.clientY; sl = bc.scrollLeft; st = bc.scrollTop;
+  let isDragging = false;
+  let hasMoved = false;
+  let startX = 0, startY = 0;
+  let scrollStartLeft = 0, scrollStartTop = 0;
+
+  // Track the element under mousedown to distinguish clicks from drags
+  let downTarget = null;
+
+  const onStart = (clientX, clientY, target) => {
+    isDragging = true;
+    hasMoved = false;
+    startX = clientX;
+    startY = clientY;
+    scrollStartLeft = bc.scrollLeft;
+    scrollStartTop = bc.scrollTop;
+    downTarget = target;
+  };
+
+  const onMove = (clientX, clientY) => {
+    if (!isDragging) return;
+    const dx = clientX - startX;
+    const dy = clientY - startY;
+
+    // Only engage drag after moving more than 4px (preserves clean clicks on cells)
+    if (!hasMoved && Math.hypot(dx, dy) > 4) {
+      hasMoved = true;
+      bc.style.cursor = 'grabbing';
+      bc.style.userSelect = 'none';
+    }
+
+    if (hasMoved) {
+      bc.scrollLeft = scrollStartLeft - dx;
+      bc.scrollTop = scrollStartTop - dy;
+    }
+  };
+
+  const onEnd = () => {
+    isDragging = false;
+    bc.style.cursor = 'grab';
+    bc.style.removeProperty('user-select');
+  };
+
+  // Prevent click handlers (e.g. placeOnBoard) from firing if the user was dragging
+  window.addEventListener('click', (e) => {
+    if (hasMoved) {
+      e.stopPropagation();
+      e.preventDefault();
+      hasMoved = false;
+    }
+  }, true);
+
+  // Mouse Listeners
+  bc.addEventListener('mousedown', (e) => {
+    if (e.button !== 0) return; // Left click only
+    onStart(e.clientX, e.clientY, e.target);
   });
-  document.addEventListener('mousemove', e => {
-    if (!dragging) return;
-    bc.scrollLeft = sl - (e.clientX - sx);
-    bc.scrollTop = st - (e.clientY - sy);
-  });
-  document.addEventListener('mouseup', () => dragging = false);
+
+  window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
+  window.addEventListener('mouseup', onEnd);
+
+  // Touch Listeners (Mobile / Tablet support)
+  bc.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      onStart(touch.clientX, touch.clientY, touch.target);
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      onMove(touch.clientX, touch.clientY);
+    }
+  }, { passive: false });
+
+  window.addEventListener('touchend', onEnd);
 })();
 
 // ── Start ────────────────────────────────────────────────────────────────────
