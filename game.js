@@ -1010,3 +1010,15 @@ setTimeout(() => {
   bc.scrollLeft = (b.offsetWidth - bc.offsetWidth) / 2;
   bc.scrollTop = (b.offsetHeight - bc.offsetHeight) / 2;
 }, 50);
+
+// At the bottom of game.js
+window.addEventListener('load', () => {
+  requestAnimationFrame(() => {
+    const bc = document.getElementById('board-container');
+    const b = document.getElementById('board');
+    if (bc && b) {
+      bc.scrollLeft = (b.offsetWidth - bc.clientWidth) / 2;
+      bc.scrollTop = (b.offsetHeight - bc.clientHeight) / 2;
+    }
+  });
+});

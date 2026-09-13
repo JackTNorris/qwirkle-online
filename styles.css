@@ -334,3 +334,58 @@
   color: #888;
   font-style: italic;
 }
+
+/* Lock the page to the viewport height and disable whole-page scrolling */
+html, body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Stops body/page scrolling */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header & banner take only their natural height */
+header {
+  flex-shrink: 0;
+}
+
+#turn-banner {
+  flex-shrink: 0;
+}
+
+/* Main fills all remaining vertical space */
+main {
+  flex: 1;
+  min-height: 0; /* Critical: allows flex child to shrink below content size */
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Board container fills the viewport region and handles all scrolling/dragging */
+#board-container {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto; /* Only this container scrolls/pans */
+  position: relative;
+  cursor: grab;
+  user-select: none;
+  touch-action: none; /* Prevents browser pull-to-refresh & pinch zoom interference */
+  scrollbar-width: none; /* Firefox */
+}
+
+#board-container::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* Sidebar scrolls internally if its contents exceed the screen height */
+.sidebar {
+  flex-shrink: 0;
+  overflow-y: auto;
+  height: 100%;
+}
